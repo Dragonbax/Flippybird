@@ -35,16 +35,16 @@ feature {NONE} -- Initialization
 			l_window_builder: GAME_WINDOW_SURFACED_BUILDER
 			l_desert: BACKGROUND
 			l_window: GAME_WINDOW_SURFACED
-			l_background, l_bird:GAME_SURFACE
+			l_background, le_oiseau:GAME_SURFACE
 			l_cadre: CADRE_IMAGE
 		do
 			create l_cadre.make
 		--	l_window:=create_window
 		--	l_background:=create_surface("city.jpg")	-- The background is in a png file
-		--	l_bird:=create_surface("bird.png")	-- The bird is in a png file
+		--	le_oiseau:=create_surface("bird.png")	-- The bird is in a png file
 
 		--	l_window.surface.draw_surface (l_background, 0, 0)		-- Drawing a background
-		--	l_window.surface.draw_surface (l_bird, 500, 400)		-- Drawing a bird (over the background)
+		--	l_window.surface.draw_surface (le_oiseau, 500, 400)		-- Drawing a bird (over the background)
 
 		--	create l_desert
 		--	if not l_desert.has_error then
