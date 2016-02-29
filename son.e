@@ -17,8 +17,56 @@ create
 feature {NONE} -- Initialization
 
 	make
+			-- Run application.
+		do
+			game_library.enable_video -- Enable the video functionalities
+			print("List of devices:%N")
+			across audio_library.devices as la_device loop
+				print("    " + la_device.item + "%N")
+			end
+			audio_library.enable_sound
+			print("Device: " + audio_library.device_specifier + "%N")
+			run_game	  -- Run the core creator of the game.
+			audio_library.quit_library
+			game_library.quit_library  -- Clear the library before quitting
+		end
 
+	run_game
+			-- Preparing and launching the game
+		local
+			l_window:GAME_WINDOW_SURFACED
+		do
+			l_window := create_window
+			game_library.quit_signal_actions.extend (agent on_quit)		-- When the X of the window is pressed, execute the on_quit method.
+			set_sound(l_window)	-- Set the sound system to play the music and the sound on space key press
+			game_library.launch	-- The controller will loop until the stop controller.method is called (in method on_quit).
+			l_window.close	-- To be sure that every ressources inside `l_window' can be disposed at `quit_library' call
+		end
 
+	create_window:GAME_WINDOW_SURFACED
+			-- Create the window that will be show. The window have an icon and a title
+		local
+			l_icon_image:GAME_IMAGE_BMP_FILE
+			l_icon:GAME_SURFACE
+			l_window_builder:GAME_WINDOW_SURFACED_BUILDER
+		do
+			create l_icon_image.make ("icon.bmp")
+			create l_window_builder
+			l_window_builder.set_title ("Sound exemple (space to play sound)")
+			Result := l_window_builder.generate_window
+			Result.key_pressed_actions.extend (agent on_key_down_quit)
+			Result.surface.draw_rectangle (create {GAME_COLOR}.make_rgb (0, 0, 0), 0, 0, Result.width, Result.height)
+			if l_icon_image.is_openable then
+				l_icon_image.open
+				if l_icon_image.is_open then
+					create l_icon.share_from_image (l_icon_image)
+					l_icon.set_transparent_color (create {GAME_COLOR}.make_rgb (255, 0, 255))
+					Result.set_icon (l_icon)
+				else
+					print("Cannot set the window icon.")
+				end
+			end
+		end
 
 	set_sound(a_window:GAME_WINDOW)
 			-- Prepare sound and sound source, play the music and set the
@@ -93,5 +141,5 @@ feature {NONE} -- Initialization
 			game_library.stop  -- Stop the controller loop (allow controller.launch to return)
 		end
 
-		-- Run application.
+
 end

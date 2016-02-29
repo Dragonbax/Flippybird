@@ -42,7 +42,7 @@ local
 		end
 
 	create_window:GAME_WINDOW_SURFACED
-			
+
 		local
 			l_window_builder:GAME_WINDOW_SURFACED_BUILDER
 		do
@@ -59,7 +59,9 @@ local
 
 		local
 			l_image:IMG_IMAGE_FILE
+			l_son:SON
 		do
+			
 			create l_image.make (a_filename)
 			if l_image.is_openable then
 				l_image.open
@@ -82,6 +84,7 @@ local
 	on_quit(a_timestamp:NATURAL_32)
 
 		do
+
 			game_library.stop
 		end
 
