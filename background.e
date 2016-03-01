@@ -15,11 +15,10 @@ inherit
 create
 	default_create
 
-feature {NONE} -- Initialization
+feature {NONE}
 
 	default_create
-			-- Process instances of classes with no creation clause.
-			-- (Default: do nothing.)
+
 		local
 			l_image: IMG_IMAGE_FILE
 		do
@@ -38,7 +37,7 @@ feature {NONE} -- Initialization
 			end
 		end
 
-end -- class DESERT
+end 
 
 
 

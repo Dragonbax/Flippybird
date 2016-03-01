@@ -15,7 +15,7 @@ inherit
 create
 	default_create
 
-feature {NONE} -- Initialization
+feature {NONE}
 
 	default_create
 		local

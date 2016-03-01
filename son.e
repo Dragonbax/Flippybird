@@ -35,6 +35,7 @@ feature {NONE} -- Initialization
 			-- Preparing and launching the game
 		local
 			l_window:GAME_WINDOW_SURFACED
+			musique_on:BOOLEAN
 		do
 			l_window := create_window
 			game_library.quit_signal_actions.extend (agent on_quit)		-- When the X of the window is pressed, execute the on_quit method.

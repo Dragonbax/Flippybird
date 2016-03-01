@@ -20,18 +20,18 @@ feature
 	make
 local
 	l_window:GAME_WINDOW_SURFACED
-	pipe2,pipe, l_background, l_bird:GAME_SURFACE
+	pipe2,pipe, fond_jeu, sprite_oiseau:GAME_SURFACE
 
 
 	do
 			l_window:=create_window
-			l_background:=create_surface("city.jpg")
-			l_bird:=create_surface("bird.png")
+			fond_jeu:=create_surface("city.jpg")
+			sprite_oiseau:=create_surface("bird.png")
 			pipe:=create_surface("pipe.png")
 			pipe2:=create_surface("pipe2.png")
 
-			l_window.surface.draw_surface (l_background, 0, 0)
-			l_window.surface.draw_surface (l_bird, 200, 300)
+			l_window.surface.draw_surface (fond_jeu, 0, 0)
+			l_window.surface.draw_surface (sprite_oiseau, 200, 300)
 			l_window.surface.draw_surface(pipe, 500, 425)
 			l_window.surface.draw_surface (pipe2, 500, 0)
 
@@ -45,10 +45,11 @@ local
 
 		local
 			l_window_builder:GAME_WINDOW_SURFACED_BUILDER
+			grandeur_x:INTEGER
+			grandeur_y:INTEGER
 		do
 			create l_window_builder
 			l_window_builder.set_dimension (800, 600)
-			l_window_builder.set_title ("Hello Bird")
 			Result := l_window_builder.generate_window
 			if Result.has_error then
 				die (1)
@@ -59,9 +60,8 @@ local
 
 		local
 			l_image:IMG_IMAGE_FILE
-			l_son:SON
 		do
-			
+
 			create l_image.make (a_filename)
 			if l_image.is_openable then
 				l_image.open
