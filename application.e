@@ -1,42 +1,36 @@
 note
-	description : "flippybird application root class"
-	date        : "$Date$"
-	revision    : "$Revision$"
-
-
+	description: "Un simili-clone du jeu Flappy bird,ici nommé Flippy Bird"
+	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
+	date: "5 Avril 2016"
+	revision: "1.0"
 class
 	APPLICATION
 
 inherit
-	GAME_LIBRARY_SHARED
-	IMG_LIBRARY_SHARED
-
+	GAME_LIBRARY_SHARED		-- To use `game_library'
+	IMG_LIBRARY_SHARED		-- To use `image_file_library'
 
 create
 	make
 
-feature {NONE}
+feature {NONE} -- Initialization
 
 	make
-
-		do
-			Game_library.enable_video
-			Image_file_library.enable_image (True, True, True)
-			run_game
-			Image_file_library.quit_library
-			Game_library.quit_library
-		end
-
-	run_game
-
-
+			-- Run application.
 		local
-			cadre_jeu: CADRE_IMAGE
+			l_engine:detachable ENGINE
 		do
-			create cadre_jeu.make
+			game_library.enable_video -- Enable the video functionalities
+			image_file_library.enable_image (true, false, false)  -- Enable PNG image (but not TIF or JPG).
+			create l_engine.make
+			if not l_engine.has_error then
+				l_engine.run
+			end
+			l_engine := Void				-- To be sure that the garbage collector can collect everything before quitting the libraries
+			game_library.clear_all_events	-- To be sure that an object is not stocked inside an event agent
+			image_file_library.quit_library  -- Correctly unlink image files library
+			game_library.quit_library  -- Clear the library before quitting
 		end
-
 
 
 end
-

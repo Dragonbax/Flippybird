@@ -1,56 +1,38 @@
 note
-	description: "Summary description for {TUYAUX}."
-	author: ""
-	date: "$Date$"
-	revision: "$Revision$"
-
+	description: "Classe représentant les tuyaux du jeu"
+	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
+	date: "5 Avril 2016"
+	revision: "1.0"
 class
 	TUYAUX
 
+inherit
+	GAME_SURFACE
+		redefine
+			default_create
+		end
+
 create
-	make
+	default_create
 
 feature {NONE} -- Initialization
 
-	make
-			-- Initialization for `Current'.
+	default_create
+		local
+			l_image: IMG_IMAGE_FILE
 		do
-			
-		end
-
-feature -- Access
-
-feature -- Measurement
-
-feature -- Status report
-
-feature -- Status setting
-
-feature -- Cursor movement
-
-feature -- Element change
-
-feature -- Removal
-
-feature -- Resizing
-
-feature -- Transformation
-
-feature -- Conversion
-
-feature -- Duplication
-
-feature -- Miscellaneous
-
-feature -- Basic operations
-
-feature -- Obsolete
-
-feature -- Inapplicable
-
-feature {NONE} -- Implementation
-
-invariant
-	invariant_clause: True -- Your invariant here
-
+			create l_image.make ("pipe_one_img.png")
+			if l_image.is_openable then
+				l_image.open
+				if l_image.is_open then
+					make_from_image (l_image)
+				else
+					has_error := True
+					make(1,1)
+				end
+			else
+				has_error := True
+				make(1,1)
+			end
+end
 end
