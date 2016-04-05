@@ -35,7 +35,7 @@ default_create
             create l_image.make ("rsz_bird.png")
             if l_image.is_openable then
                 l_image.open
-            create surface.share_from_image(l_image)
+            create surface.make_from_image(l_image)
             else
                 has_error := False
             end
