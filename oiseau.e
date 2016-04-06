@@ -9,11 +9,7 @@ class
 
 inherit
 	GAME_LIBRARY_SHARED
-
-
-
-
-		redefine
+	redefine
 			default_create
 		end
 
@@ -39,9 +35,19 @@ default_create
             else
                 has_error := False
             end
+            initialize_animation_coordinate
         end
 
 
+	initialize_animation_coordinate
+			-- Create the `animation_coordinates'
+		do
+			create {ARRAYED_LIST[TUPLE[x,y:INTEGER]]} animation_coordinates.make(4)
+			animation_coordinates.extend ([surface.width // 3, 0])	-- Be sure to place the image standing still first
+			animation_coordinates.extend ([0, 0])
+			animation_coordinates.extend ([(surface.width // 3) * 2, 0])
+			animation_coordinates.extend ([0, 0])
+		end
 
 
 
@@ -58,7 +64,7 @@ feature -- Access
 			l_coordinate:TUPLE[x,y:INTEGER]
 			l_delta_time:NATURAL_32
 		do
-					if going_right then
+					if going_up then
 						y := y + 5
 					else
 						y := y - 5
@@ -68,27 +74,23 @@ feature -- Access
 
 		end
 
-	go_left(a_timestamp:NATURAL_32)
-			-- Make `Current' starting to move left
-		do
-			old_timestamp := a_timestamp
-			going_left := True
-		end
 
-	go_right(a_timestamp:NATURAL_32)
+
+	go_up(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to move right
 		do
 			old_timestamp := a_timestamp
-			going_right := True
+			going_up := True
 		end
 
+	rip:BOOLEAN
 
 
 
 	going_left:BOOLEAN
 			-- Is `Current' moving left
 
-	going_right:BOOLEAN
+	going_up:BOOLEAN
 			-- Is `Current' moving right
 
 	x:INTEGER assign set_x
@@ -119,8 +121,8 @@ feature -- Access
 
 
 feature {NONE} -- implementation
-			-- Every coordinate of portion of images in `surface'
 
+	animation_coordinates:LIST[TUPLE[x,y:INTEGER]]
 	old_timestamp:NATURAL_32
 			-- When appen the last movement (considering `movement_delta')
 

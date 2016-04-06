@@ -24,6 +24,7 @@ feature {NONE} -- Initialization
 			create FOND_IMAGE
 			create oiseau
 			create pipe
+			create sol
 
 
 
@@ -60,7 +61,7 @@ feature -- Access
 
 	pipe:TUYAUX
 			-- The main character of the game
-
+	sol:SOL
 
 	window:GAME_WINDOW_SURFACED
 			-- The window to draw the scene
@@ -90,6 +91,9 @@ feature {NONE} -- Implementation
 			window.surface.draw_surface (FOND_IMAGE, 0, 0)
 			window.surface.draw_surface (pipe, 200, 0)
 			window.surface.draw_surface(oiseau.surface, 200, 358)
+			window.surface.draw_surface (pipe, 450, -100)
+			window.surface.draw_surface (sol,0,550)
+			window.surface.draw_surface (sol,420,550)
 
 
 
@@ -103,10 +107,9 @@ feature {NONE} -- Implementation
 			-- Action when a keyboard key has been pushed
 		do
 			if not a_key_state.is_repeat then		-- Be sure that the event is not only an automatic repetition of the key
-				if a_key_state.is_right then
-					oiseau.go_right(a_timestamp)
-				elseif a_key_state.is_left then
-					oiseau.go_left(a_timestamp)
+				if a_key_state.is_space then
+					oiseau.go_up(a_timestamp)
+
 				end
 			end
 
@@ -116,7 +119,7 @@ feature {NONE} -- Implementation
 			-- Action when a keyboard key has been released
 		do
 			if not a_key_state.is_repeat then		-- I don't know if a key release can repeat, but you never know...
-				if a_key_state.is_right then
+				if a_key_state.is_space then
 
 				elseif a_key_state.is_left then
 
