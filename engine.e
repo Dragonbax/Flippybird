@@ -42,7 +42,7 @@ feature -- Access
 	run
 			-- Create ressources and launch the game
 		do
-			oiseau.y := 375
+			oiseau.y := 200
 			oiseau.x := 250
 			game_library.quit_signal_actions.extend (agent on_quit)
 			window.key_pressed_actions.extend (agent on_key_pressed)
@@ -64,14 +64,16 @@ feature -- Access
 	sol:SOL
 
 	window:GAME_WINDOW_SURFACED
+
+	oiseau_y : INTEGER_32
 			-- The window to draw the scene
 
 
 feature {NONE} -- Implementation
 
-	set_tuyaux(hauteur:INTEGER)
+	set_tuyaux
 	do
-
+		oiseau.y:=oiseau.y-1
 
 	end
 
@@ -79,21 +81,31 @@ feature {NONE} -- Implementation
 
 	-- Event that is launch at each iteration.
 		do
+			oiseau_y:=100
+			oiseau_y:=oiseau.y
 			oiseau.update (a_timestamp)	-- Update oiseau animation and coordinate
 			-- Be sure that oiseau does not get out of the screen
 			if oiseau.x < 0 then
 				oiseau.x := 0
+
+
+
+
 --			elseif oiseau.x + oiseau.sub_image_width > FOND_IMAGE.width then
 --				oiseau.x := FOND_IMAGE.width - oiseau.sub_image_width
+
 			end
 
+
 			-- Draw the scene
+
 			window.surface.draw_surface (FOND_IMAGE, 0, 0)
 			window.surface.draw_surface (pipe, 200, 0)
-			window.surface.draw_surface(oiseau.surface, 200, 358)
+			window.surface.draw_surface(oiseau.surface, 200, oiseau_y)
 			window.surface.draw_surface (pipe, 450, -100)
 			window.surface.draw_surface (sol,0,550)
 			window.surface.draw_surface (sol,420,550)
+
 
 
 
@@ -120,7 +132,7 @@ feature {NONE} -- Implementation
 		do
 			if not a_key_state.is_repeat then		-- I don't know if a key release can repeat, but you never know...
 				if a_key_state.is_space then
-
+				oiseau.go_down(a_timestamp)
 				elseif a_key_state.is_left then
 
 				end

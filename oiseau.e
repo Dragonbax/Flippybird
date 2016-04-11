@@ -64,17 +64,34 @@ feature -- Access
 			l_coordinate:TUPLE[x,y:INTEGER]
 			l_delta_time:NATURAL_32
 		do
+
 					if going_up then
-						y := y + 5
-					else
-						y := y - 5
+						if y <=-10 then
+						 	stop_oiseau(a_timestamp)
+						end
+						y := y - 2
+					elseif going_down then
+						if y >= 490 then
+							stop_oiseau(a_timestamp)
+							rip := True
+						end
+						y := y + 2
 					end
+
 					old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
+
 
 
 		end
 
+	go_down(a_timestamp:NATURAL_32)
 
+		do
+			old_timestamp := a_timestamp
+			going_up := False
+			going_down := True
+
+		end
 
 	go_up(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to move right
@@ -82,12 +99,19 @@ feature -- Access
 			old_timestamp := a_timestamp
 			going_up := True
 		end
+	stop_oiseau(a_timestamp:NATURAL_32)
+	do
+		old_timestamp := a_timestamp
+		going_up := False
+		going_down := False
+		y := y
+	 end
 
 	rip:BOOLEAN
 
 
 
-	going_left:BOOLEAN
+	going_down:BOOLEAN
 			-- Is `Current' moving left
 
 	going_up:BOOLEAN
