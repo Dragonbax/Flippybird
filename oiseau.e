@@ -35,7 +35,7 @@ default_create
             else
                 has_error := False
             end
-            initialize_animation_coordinate
+           initialize_animation_coordinate
         end
 
 
@@ -96,6 +96,7 @@ feature -- Access
 	go_up(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to move right
 		do
+			
 			old_timestamp := a_timestamp
 			going_up := True
 		end
@@ -108,6 +109,7 @@ feature -- Access
 	 end
 
 	rip:BOOLEAN
+
 
 
 
@@ -140,6 +142,7 @@ feature -- Access
 		end
 
 	surface:GAME_SURFACE
+--	pipe:TUYAUX
 
 
 

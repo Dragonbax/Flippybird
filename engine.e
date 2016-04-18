@@ -44,6 +44,8 @@ feature -- Access
 		do
 			oiseau.y := 200
 			oiseau.x := 250
+			pipe.x:=450
+			pipe.y:=-100
 			game_library.quit_signal_actions.extend (agent on_quit)
 			window.key_pressed_actions.extend (agent on_key_pressed)
 			window.key_released_actions.extend (agent on_key_released)
@@ -59,6 +61,7 @@ feature -- Access
 
 	oiseau:oiseau
 
+
 	pipe:TUYAUX
 			-- The main character of the game
 	sol:SOL
@@ -68,14 +71,18 @@ feature -- Access
 	oiseau_y : INTEGER_32
 			-- The window to draw the scene
 
+	pipe_y: INTEGER_32
+
+	pipe_x:INTEGER_32
+
 
 feature {NONE} -- Implementation
 
-	set_tuyaux
-	do
-		oiseau.y:=oiseau.y-1
+--	set_tuyaux
+--	do
+--		oiseau.y:=oiseau.y-1
 
-	end
+--	end
 
 	on_iteration(a_timestamp:NATURAL_32)
 
@@ -83,10 +90,15 @@ feature {NONE} -- Implementation
 		do
 			oiseau_y:=100
 			oiseau_y:=oiseau.y
+			pipe_x:=450
+			pipe_x:=pipe.x
+
 			oiseau.update (a_timestamp)	-- Update oiseau animation and coordinate
+			pipe.update (a_timestamp)
 			-- Be sure that oiseau does not get out of the screen
 			if oiseau.x < 0 then
 				oiseau.x := 0
+
 
 
 
@@ -102,7 +114,7 @@ feature {NONE} -- Implementation
 			window.surface.draw_surface (FOND_IMAGE, 0, 0)
 			window.surface.draw_surface (pipe, 200, 0)
 			window.surface.draw_surface(oiseau.surface, 200, oiseau_y)
-			window.surface.draw_surface (pipe, 450, -100)
+			window.surface.draw_surface (pipe, pipe_x, -100)
 			window.surface.draw_surface (sol,0,550)
 			window.surface.draw_surface (sol,420,550)
 
@@ -120,6 +132,7 @@ feature {NONE} -- Implementation
 		do
 			if not a_key_state.is_repeat then		-- Be sure that the event is not only an automatic repetition of the key
 				if a_key_state.is_space then
+					pipe.scroll(a_timestamp)
 					oiseau.go_up(a_timestamp)
 
 				end
