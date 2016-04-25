@@ -8,6 +8,7 @@ class
 
 inherit
 	GAME_SURFACE
+	--GAME_RANDOM_SHARED
 --	GAME_LIBRARY_SHARED
 		redefine
 			default_create
@@ -26,6 +27,7 @@ distance_entre:INTEGER
 		local
 			l_image: IMG_IMAGE_FILE
 		do
+			create rando
 			create l_image.make ("pipe_one_img.png")
 			if l_image.is_openable then
 				l_image.open
@@ -55,22 +57,29 @@ feature -- Access
 		local
 			l_coordinate:TUPLE[x,y:INTEGER]
 			l_delta_time:NATURAL_32
+			oiseau:oiseau
 		do
-					--scroll_on:=True
-					if scroll_On then
+				create oiseau
 
 
+
+
+
+
+					if scroll_On=True then
+						rando.gen_random
+						y:=rando.y_random
 						x := x - 1
-						scroll_off:=True
+						scroll_off:=False
 
---					elseif scroll_off then
---						if x >= 490 then
---							stop_scroll(a_timestamp)
---							--rip := True
---						end
---						x := x + 2
-				end
+					elseif scroll_off then
+						if x >= 490 then
+							stop_scroll(a_timestamp)
 
+						end
+						x := x + 2
+
+end
 					old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
 
 
@@ -100,7 +109,7 @@ feature -- Access
 		y := y
 	 end
 
-	--rip:BOOLEAN
+
 
 
 
@@ -127,9 +136,11 @@ feature -- Access
 	set_y(a_y:INTEGER)
 			-- Assign the value of `y' with `a_y'
 		do
-			y := a_y
+
+			rando.gen_random
+			y :=  rando.y_random
 		ensure
-			Is_Assign: y = a_y
+			Is_Assign: y=rando.y_random
 		end
 
 	--surface:GAME_SURFACE
@@ -139,6 +150,7 @@ feature -- Access
 
 feature {NONE} -- implementation
 
+	rando:NOMBRE_RANDOM
 
 	old_timestamp:NATURAL_32
 			-- When appen the last movement (considering `movement_delta')

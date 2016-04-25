@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 			create oiseau
 			create pipe
 			create sol
+			create random
 
 
 
@@ -75,6 +76,11 @@ feature -- Access
 
 	pipe_x:INTEGER_32
 
+	random:NOMBRE_RANDOM
+
+	i:INTEGER
+
+	ok:INTEGER
 
 feature {NONE} -- Implementation
 
@@ -93,6 +99,8 @@ feature {NONE} -- Implementation
 			pipe_x:=450
 			pipe_x:=pipe.x
 
+
+
 			oiseau.update (a_timestamp)	-- Update oiseau animation and coordinate
 			pipe.update (a_timestamp)
 			-- Be sure that oiseau does not get out of the screen
@@ -110,13 +118,28 @@ feature {NONE} -- Implementation
 
 
 			-- Draw the scene
-
+			i:=0
 			window.surface.draw_surface (FOND_IMAGE, 0, 0)
-			window.surface.draw_surface (pipe, 200, 0)
+		--	window.surface.draw_surface (pipe, 200,pipe.y)
 			window.surface.draw_surface(oiseau.surface, 200, oiseau_y)
-			window.surface.draw_surface (pipe, pipe_x, -100)
+		--	window.surface.draw_surface (pipe, pipe_x,pipe.y)
 			window.surface.draw_surface (sol,0,550)
 			window.surface.draw_surface (sol,420,550)
+			from
+    i := 0
+until
+    i >= 40
+loop
+
+	ok:=random.y_random
+
+   	window.surface.draw_surface (pipe, pipe_x,ok)
+
+	
+   	pipe_x:=pipe_x+300
+   	ok:=random.y_random
+    i := i + 1
+end
 
 
 
@@ -125,6 +148,10 @@ feature {NONE} -- Implementation
 			-- Update modification in the screen
 			window.update
 		end
+	testo
+	do
+		random.gen_random
+		end
 
 
 	on_key_pressed(a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
@@ -132,8 +159,11 @@ feature {NONE} -- Implementation
 		do
 			if not a_key_state.is_repeat then		-- Be sure that the event is not only an automatic repetition of the key
 				if a_key_state.is_space then
-					pipe.scroll(a_timestamp)
+					pipe.scroll (a_timestamp)
+					oiseau.jeu_actif_on (a_timestamp)
 					oiseau.go_up(a_timestamp)
+					pipe.scroll (a_timestamp)
+
 
 				end
 			end

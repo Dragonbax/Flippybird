@@ -27,6 +27,7 @@ default_create
 
         do
 			create surface.make (50,50)
+			create random
             has_error := False
             create l_image.make ("rsz_bird.png")
             if l_image.is_openable then
@@ -70,6 +71,8 @@ feature -- Access
 						 	stop_oiseau(a_timestamp)
 						end
 						y := y - 2
+						jeu_actif:=True
+						
 					elseif going_down then
 						if y >= 490 then
 							stop_oiseau(a_timestamp)
@@ -96,7 +99,7 @@ feature -- Access
 	go_up(a_timestamp:NATURAL_32)
 			-- Make `Current' starting to move right
 		do
-			
+
 			old_timestamp := a_timestamp
 			going_up := True
 		end
@@ -110,6 +113,20 @@ feature -- Access
 
 	rip:BOOLEAN
 
+	jeu_actif:BOOLEAN
+
+	jeu_actif_on(a_timestamp:NATURAL_32)
+	do
+		old_timestamp := a_timestamp
+		jeu_actif:=True
+
+	end
+
+	rip_on(a_timestamp:NATURAL_32)
+	do
+		old_timestamp := a_timestamp
+		rip:=True
+	end
 
 
 
@@ -123,6 +140,8 @@ feature -- Access
 			-- Vertical position of `Current'
 
 	y:INTEGER assign set_y
+
+	random:NOMBRE_RANDOM
 			-- Horizontal position of `Current'
 
 	set_x(a_x:INTEGER)
@@ -136,7 +155,9 @@ feature -- Access
 	set_y(a_y:INTEGER)
 			-- Assign the value of `y' with `a_y'
 		do
+
 			y := a_y
+
 		ensure
 			Is_Assign: y = a_y
 		end
