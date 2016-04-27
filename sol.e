@@ -1,12 +1,14 @@
 note
 	description: "Classe représentant le sol du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "5 Avril 2016"
+	date: "26 avril 2016"
 	revision: "1.0"
+
 class
 	SOL
 
 inherit
+
 	GAME_SURFACE
 		redefine
 			default_create
@@ -28,11 +30,12 @@ feature {NONE} -- Initialization
 					make_from_image (l_image)
 				else
 					has_error := True
-					make(1,1)
+					make (1, 1)
 				end
 			else
 				has_error := True
-				make(1,1)
+				make (1, 1)
 			end
-end
+		end
+
 end

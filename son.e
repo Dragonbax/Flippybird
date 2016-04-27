@@ -1,7 +1,7 @@
 note
 	description: "Classe contenant la musique et le son du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "5 Avril 2016"
+	date: "26 avril 2016"
 	revision: "1.0"
 class
 	SON

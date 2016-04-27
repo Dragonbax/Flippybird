@@ -1,7 +1,7 @@
 note
 	description: "Un simili-clone du jeu Flappy bird,ici nommé Flippy Bird"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "5 Avril 2016"
+	date: "26 avril 2016"
 	revision: "1.0"
 class
 	APPLICATION
