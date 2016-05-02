@@ -11,6 +11,7 @@ inherit
 
 	GAME_LIBRARY_SHARED -- To use `game_library'
 
+
 create
 	make
 
@@ -22,12 +23,25 @@ feature {NONE}
 			le_thread:UN_THREAD
 
 
+
+
 		do
 			create FOND_IMAGE
 			create oiseau
 			create pipe
 			create sol
 			create random
+			create texts.make
+			create font.make ("font.ttf", 16)
+			if font.is_openable then
+				font.open
+				has_error := not font.is_open
+			else
+				has_error := True
+			end
+			--create son
+
+
 			create l_window_builder
 			l_window_builder.set_title ("Flippy bird")
 			if not FOND_IMAGE.has_error then
@@ -44,7 +58,8 @@ feature -- Access
 	run
 			-- Create ressources and launch the game
 		do
-			oiseau.y := 200
+			texts.extend ([400, 400, {STRING_32}"Click somewhere and start typing"])
+			oiseau.y := 250
 			oiseau.x := 250
 			pipe.x := 450
 			pipe.change_y
@@ -66,35 +81,85 @@ feature -- Access
 
 	sol: SOL
 
+	--son:SON
+
 	window: GAME_WINDOW_SURFACED
 
 	oiseau_y: INTEGER_32
+
+	pipe_mid_bas:INTEGER
 
 	pipe_y: INTEGER_32
 
 	pipe_x: INTEGER_32
 
+	texts:LINKED_LIST[TUPLE[x, y:INTEGER; text:STRING_32]]
+
 	random: NOMBRE_RANDOM
+	font:TEXT_FONT
 
 	i: INTEGER
 
 	ok: INTEGER
+
+	points:INTEGER
+
+	pipe_mid_haut:INTEGER
+
+
 
 feature {NONE} -- Implementation
 
 	on_iteration (a_timestamp: NATURAL_32)
 
 			-- Event that is launch at each iteration.
+
+		local
+			l_text_surface:TEXT_SURFACE_BLENDED
+			l_color:GAME_COLOR
+
 		do
+
 			oiseau_y := 100
 			oiseau_y := oiseau.y
 			pipe_x := 450
 			pipe_x := pipe.x
+			pipe_mid_bas:=pipe.y+426
+			pipe_mid_haut:=pipe.y+327
+			points:=0
 			oiseau.update (a_timestamp) -- Update oiseau animation and coordinate
 			pipe.update (a_timestamp)
 				-- Be sure that the bird does not get out of the screen
 			if oiseau.x < 0 then
 				oiseau.x := 0
+			elseif
+			oiseau.y=pipe_mid_haut   then
+				oiseau.stop_oiseau (a_timestamp)
+				points:=points+1
+
+			elseif
+				oiseau.y=pipe_mid_bas
+
+			then
+				oiseau.stop_oiseau (a_timestamp)
+
+--			elseif oiseau.y = pipe.y then
+--				oiseau.stop_oiseau (a_timestamp)
+			elseif oiseau.rip=True then
+				pipe.stop_scroll (a_timestamp)
+				on_quit(a_timestamp)
+
+
+			else
+
+
+
+
+
+
+
+
+
 			end
 
 				-- Draw the scene
@@ -113,6 +178,10 @@ feature {NONE} -- Implementation
 				window.surface.draw_surface (pipe, pipe_x, pipe.y)
 				pipe_x := pipe_x + 300
 				i := i + 1
+			--	if oiseau.y = pipe.y then
+				--	oiseau.stop_oiseau (a_timestamp)
+
+				--end
 			end
 
 
@@ -124,7 +193,9 @@ feature {NONE} -- Implementation
 		do
 			if not a_key_state.is_repeat then -- Be sure that the event is not only an automatic repetition of the key
 				if a_key_state.is_space then
-					pipe.scroll (a_timestamp)
+					if oiseau.rip=False then
+						pipe.scroll (a_timestamp)
+					end
 					oiseau.jeu_actif_on (a_timestamp)
 					oiseau.go_up (a_timestamp)
 

@@ -59,15 +59,20 @@ feature -- Access
 			if going_up then
 				if y <= -10 then --make sure that the bird cannot go higher than the window height
 					stop_oiseau (a_timestamp)
+				elseif rip = True then
+					stop_oiseau (a_timestamp)
+				else
+					y := y - 2
 				end
-				y := y - 2
 				jeu_actif := True
 			elseif going_down then
 				if y >= 490 then --make sure that the bird cannot go lower than the ground
 					stop_oiseau (a_timestamp)
 					rip := True
+
+				else
+					y := y + 2
 				end
-				y := y + 2
 			end
 			old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
 		end

@@ -79,7 +79,7 @@ feature -- Access
 		end
 
 	scroll (a_timestamp: NATURAL_32)
-		
+
 		do
 			old_timestamp := a_timestamp
 			scroll_On := True
