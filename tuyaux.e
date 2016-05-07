@@ -39,10 +39,10 @@ feature {NONE} -- Initialization
 				has_error := True
 				make (1, 1)
 			end
-			initialize_animation_coordinate
+			coordonne_tuyaux
 		end
 
-	initialize_animation_coordinate
+	coordonne_tuyaux
 			-- Create the `animation_coordinates'
 		do
 			create {ARRAYED_LIST [TUPLE [x, y: INTEGER]]} xety.make (1)
@@ -66,7 +66,7 @@ feature -- Access
 				if x >= 490 then
 					stop_scroll (a_timestamp)
 				end
-				x := x + 2
+				x := x + 0
 			end
 			old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
 		end
