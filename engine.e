@@ -20,12 +20,14 @@ feature {NONE}
 		local
 			l_window_builder: GAME_WINDOW_SURFACED_BUILDER
 			le_thread: UN_THREAD
+
 		do
 			create FOND_IMAGE
 			create oiseau
 			create pipe
 			create sol
 			create random
+			create musique
 			create texts.make
 			create font.make ("font.ttf", 16)
 			if font.is_openable then
@@ -44,6 +46,7 @@ feature {NONE}
 			window := l_window_builder.generate_window
 			create le_thread.make ("test")
 			has_error := FOND_IMAGE.has_error or oiseau.has_error or window.has_error
+
 		end
 
 feature -- Access
@@ -77,7 +80,7 @@ feature -- Access
 
 	sol: SOL
 
-		--son:SON
+	musique:SON
 
 	window: GAME_WINDOW_SURFACED
 
@@ -97,7 +100,7 @@ feature -- Access
 
 	i: INTEGER
 
-	ok: INTEGER
+
 
 	points: INTEGER
 
@@ -126,6 +129,7 @@ feature {NONE} -- Implementation
 				--points := 0
 			oiseau.update (a_timestamp) -- Update oiseau animation and coordinate
 			pipe.update (a_timestamp)
+			musique.audio_library.update
 
 
 				--print(pipe.y)

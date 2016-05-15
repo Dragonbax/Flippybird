@@ -9,7 +9,8 @@ class
 inherit
 	GAME_LIBRARY_SHARED		-- To use `game_library'
 	IMG_LIBRARY_SHARED
-	TEXT_LIBRARY_SHARED	-- To use `image_file_library'
+	TEXT_LIBRARY_SHARED
+	AUDIO_LIBRARY_SHARED	-- To use `image_file_library'
 
 create
 	make
@@ -24,6 +25,7 @@ feature {NONE} -- Initialization
 			game_library.enable_video -- Enable the video functionalities
 			image_file_library.enable_image (true, false, false)  -- Enable PNG image (but not TIF or JPG).
 			text_library.enable_text
+			audio_library.enable_sound
 			create l_engine.make
 			if not l_engine.has_error then
 				l_engine.run
@@ -32,7 +34,8 @@ feature {NONE} -- Initialization
 			game_library.clear_all_events	-- To be sure that an object is not stocked inside an event agent
 			image_file_library.quit_library  -- Correctly unlink image files library
 			game_library.quit_library
-			text_library.quit_library  -- Clear the library before quitting
+			text_library.quit_library
+			audio_library.quit_library  -- Clear the library before quitting
 		end
 
 
