@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-15-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-15-0 http://www.eiffel.com/developers/xml/configuration-1-15-0.xsd" name="flippy_bird" uuid="46FD29F2-0485-4A58-BDC7-E749CED4C3EE">
+<system xmlns="http://www.eiffel.com/developers/xml/configuration-1-14-0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.eiffel.com/developers/xml/configuration-1-14-0 http://www.eiffel.com/developers/xml/configuration-1-14-0.xsd" name="flippy_bird" uuid="46FD29F2-0485-4A58-BDC7-E749CED4C3EE">
 	<target name="anim_surfaced">
 		<root class="APPLICATION" feature="make"/>
-		<option full_class_checking="false" is_obsolete_routine_type="true" void_safety="transitional" syntax="standard">
+		<option full_class_checking="false" void_safety="transitional" syntax="standard">
 			<assertions precondition="true" postcondition="true" check="true" invariant="true" loop="true" supplier_precondition="true"/>
 		</option>
 		<setting name="concurrency" value="thread"/>
@@ -15,9 +15,12 @@
 		<library name="game_image_file" location="$EIFFEL_LIBRARY\contrib\library\game2\game_image_file\game_image_file-safe.ecf"/>
 		<library name="game_text" location="$ISE_LIBRARY\contrib\library\game2\game_text\game_text-safe.ecf"/>
 		<library name="game_tools" location="$ISE_LIBRARY\contrib\library\game2\game_tools\game_tools-safe.ecf"/>
+		<library name="net" location="$ISE_LIBRARY\library\net\net-safe.ecf"/>
 		<library name="testing" location="$ISE_LIBRARY\library\testing\testing-safe.ecf"/>
 		<library name="thread" location="$ISE_LIBRARY\library\thread\thread.ecf"/>
 		<cluster name="project" location=".\" recursive="true">
+			<option void_safety="none">
+			</option>
 			<file_rule>
 				<exclude>/.svn$</exclude>
 				<exclude>/EIFGENs$</exclude>

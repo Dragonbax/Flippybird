@@ -1,7 +1,7 @@
 note
 	description: "Classe représentant l'oiseau du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "26 avril 2016"
+	date: "17 mai 2016"
 	revision: "1.0"
 
 class
@@ -69,7 +69,6 @@ feature -- Access
 				if y >= 490 then --make sure that the bird cannot go lower than the ground
 					stop_oiseau (a_timestamp)
 					rip := True
-
 				else
 					y := y + 2
 				end

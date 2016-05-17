@@ -1,7 +1,7 @@
 note
 	description: "Classe générant des nombres aléatoires"
 	author: "Félix-Olivier Lafleur-Duhamel"
-	date: "26 avril 2016"
+	date: "17 mai 2016"
 	version: "1.0"
 
 class

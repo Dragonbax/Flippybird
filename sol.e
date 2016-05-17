@@ -1,7 +1,7 @@
 note
 	description: "Classe représentant le sol du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "26 avril 2016"
+	date: "17 mai 2016"
 	revision: "1.0"
 
 class

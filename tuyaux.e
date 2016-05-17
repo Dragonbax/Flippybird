@@ -1,7 +1,7 @@
 note
 	description: "Classe représentant les tuyaux du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "26 avril 2016"
+	date: "17 mai 2016"
 	revision: "1.0"
 
 class
@@ -61,7 +61,6 @@ feature -- Access
 			if scroll_On = True then
 				x := x - 1
 				scroll_off := False
-
 			elseif scroll_off then
 				if x >= 490 then
 					stop_scroll (a_timestamp)
@@ -79,7 +78,6 @@ feature -- Access
 		end
 
 	scroll (a_timestamp: NATURAL_32)
-
 		do
 			old_timestamp := a_timestamp
 			scroll_On := True
@@ -119,7 +117,6 @@ feature -- Access
 			rando.gen_random
 			y := rando.y_random
 		end
-
 
 feature {NONE} -- implementation
 

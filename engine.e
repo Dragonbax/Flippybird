@@ -1,7 +1,7 @@
 note
 	description: "Classe moteur du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "26 avril 2016"
+	date: "17 mai 2016"
 	revision: "1.0"
 
 class
@@ -20,33 +20,20 @@ feature {NONE}
 		local
 			l_window_builder: GAME_WINDOW_SURFACED_BUILDER
 			le_thread: UN_THREAD
-
 		do
-			create FOND_IMAGE
-			create oiseau
+			create image_de_fond
+			create le_oiseau
 			create pipe
 			create sol
 			create random
 			create musique
-			create texts.make
-			create font.make ("font.ttf", 16)
-			if font.is_openable then
-				font.open
-				has_error := not font.is_open
-			else
-				has_error := True
-			end
-				--create son
-
 			create l_window_builder
 			l_window_builder.set_title ("Flippy bird")
-			if not FOND_IMAGE.has_error then
-				l_window_builder.set_dimension (800, 600) --Create a 800(widht) X 600(height) window
+			if not image_de_fond.has_error then
+				l_window_builder.set_dimension (800, 600) --Créer une fenêtre de 800(largeur) X 600(hauteur)
 			end
 			window := l_window_builder.generate_window
-			create le_thread.make ("test")
-			has_error := FOND_IMAGE.has_error or oiseau.has_error or window.has_error
-
+			has_error := image_de_fond.has_error or le_oiseau.has_error or window.has_error
 		end
 
 feature -- Access
@@ -57,9 +44,8 @@ feature -- Access
 			print(points)
 			tuyaux_suivant := 0
 			points := 0
-			texts.extend ([400, 400, {STRING_32} "Click somewhere and start typing"])
-			oiseau.y := 250
-			oiseau.x := 250
+			le_oiseau.y := 250
+			le_oiseau.x := 250
 			pipe.x := 450
 			pipe.change_y
 			game_library.quit_signal_actions.extend (agent on_quit)
@@ -72,15 +58,15 @@ feature -- Access
 	has_error: BOOLEAN
 			-- `True' if an error occured during the creation of `Current'
 
-	FOND_IMAGE: FOND_IMAGE --Background
+	image_de_fond: FOND_IMAGE --Background
 
-	oiseau: OISEAU
+	le_oiseau: OISEAU
 
 	pipe: TUYAUX
 
 	sol: SOL
 
-	musique:SON
+	musique: SON
 
 	window: GAME_WINDOW_SURFACED
 
@@ -92,85 +78,68 @@ feature -- Access
 
 	pipe_x: INTEGER_32
 
-	texts: LINKED_LIST [TUPLE [x, y: INTEGER; text: STRING_32]]
-
 	random: NOMBRE_RANDOM
-
-	font: TEXT_FONT
 
 	i: INTEGER
 
-
-
 	points: INTEGER
+
+	sc: SERVEUR_CLIENT
 
 	pipe_mid_haut: INTEGER
 
 	total: INTEGER
 
+	le_pointage: INTEGER
+
 	tuyaux_suivant: INTEGER
 
 feature {NONE} -- Implementation
 
-	on_iteration (a_timestamp: NATURAL_32)
+	on_iteration (a_timestamp: NATURAL_32) -- Evenement qui est lance a chaque iteration
 
-			-- Event that is launch at each iteration.
-
-		local
-			l_text_surface: TEXT_SURFACE_BLENDED
-			l_color: GAME_COLOR
 		do
 			oiseau_y := 100
-			oiseau_y := oiseau.y
-				--pipe_x := 450
+			oiseau_y := le_oiseau.y
 			pipe_x := pipe.x
-			pipe_mid_bas := pipe.y + 420
+			pipe_mid_bas := pipe.y + 427
 			pipe_mid_haut := pipe.y + 327
-				--points := 0
-			oiseau.update (a_timestamp) -- Update oiseau animation and coordinate
+			le_oiseau.update (a_timestamp) -- Update oiseau animation and coordinate
 			pipe.update (a_timestamp)
 			musique.audio_library.update
 
-
-				--print(pipe.y)
-				-- Be sure that the bird does not get out of the screen
-			if oiseau.x < 0 then
-				oiseau.x := 0
+				-- S'assure que l'oiseau ne sort pas de l'ecran
+			if le_oiseau.x < 0 then
+				le_oiseau.x := 0
 			end
-
-
-			if oiseau.x + 20 = pipe_x+tuyaux_suivant + pipe.width then
-				tuyaux_suivant := tuyaux_suivant + 300
-				points:=points+1
-				print(points)
+			if le_oiseau.x + 15 = pipe_x + tuyaux_suivant + pipe.width then -- Lorsque l'oiseeau passe un tuyau
+				tuyaux_suivant := tuyaux_suivant + 300 -- Ajoute 300px pour donner les coordonnees du prochain tuyau
+				points := points + 1 --Additionne 1 points
+				print (points)
 			end
+			if le_oiseau.y <= pipe_mid_haut and le_oiseau.x + 15 >= pipe_x + tuyaux_suivant and le_oiseau.x + 15 <= pipe_x + tuyaux_suivant + pipe.width then
+				le_oiseau.rip_on (a_timestamp) --Permet d'identifier si l'oiseau touche a un tuyau(haut).Si c'est le cas, appelle oiseau.rip_on
 
-			if oiseau.y <= pipe_mid_haut and oiseau.x + 20 >= pipe_x + tuyaux_suivant and oiseau.x <= pipe_x + tuyaux_suivant + pipe.width then
-				oiseau.rip_on (a_timestamp)
+			end
+			if le_oiseau.y >= pipe_mid_bas and le_oiseau.x + 15 >= pipe_x + tuyaux_suivant and le_oiseau.x + 15 <= pipe_x + tuyaux_suivant + pipe.width then
+				le_oiseau.rip_on (a_timestamp) --Permet d'identifier si l'oiseau touche a un tuyau(bas).Si c'est le cas, appelle oiseau.rip_on
 
-
-				end
-
-			if oiseau.y >= pipe_mid_bas and oiseau.x + 20 >= pipe_x + tuyaux_suivant and oiseau.x <= pipe_x + tuyaux_suivant + pipe.width then
-				oiseau.rip_on (a_timestamp)
-
-				end
-
-			if oiseau.rip = True then
+			end
+			if le_oiseau.rip = True then --Lorsque oiseau.rip egal a vrai, arrete l'oiseau et les tuyaux de bouger
 				pipe.stop_scroll (a_timestamp)
-				oiseau.stop_oiseau (a_timestamp)
-				end
+				le_oiseau.stop_oiseau (a_timestamp)
+			end
 
-
-
-				-- Draw the scene
+				-- Dessine les elements
 			i := 0
-			window.surface.draw_surface (FOND_IMAGE, 0, 0)
+			window.surface.draw_surface (image_de_fond, 0, 0)
 				--	window.surface.draw_surface (pipe, 200,pipe.y)
-			window.surface.draw_surface (oiseau.surface, 200, oiseau_y)
+			window.surface.draw_surface (le_oiseau.surface, 200, oiseau_y)
 				--	window.surface.draw_surface (pipe, pipe_x,pipe.y)
 			window.surface.draw_surface (sol, 0, 550)
 			window.surface.draw_surface (sol, 420, 550)
+
+				--Dessine les 100 tuyaux du jeu
 			from
 				i := 0
 			until
@@ -179,43 +148,42 @@ feature {NONE} -- Implementation
 				window.surface.draw_surface (pipe, pipe_x, pipe.y)
 				pipe_x := pipe_x + 300
 				i := i + 1
-					--	if oiseau.y = pipe.y then
-					--	oiseau.stop_oiseau (a_timestamp)
-
-					--end
 			end
-			window.update -- Update modification in the screen
+			window.update -- Met a jour les modifications dans l'ecran
 		end
 
 	on_key_pressed (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
-			-- Action when a keyboard key has been pushed
+			-- Action quand une touche de clavier a ete peser
 		do
 			if not a_key_state.is_repeat then -- Be sure that the event is not only an automatic repetition of the key
 				if a_key_state.is_space then
-					if oiseau.rip = False then
+					if le_oiseau.rip = False then
 						pipe.scroll (a_timestamp)
 					end
-					oiseau.jeu_actif_on (a_timestamp)
-					oiseau.go_up (a_timestamp)
+					le_oiseau.jeu_actif_on (a_timestamp)
+					le_oiseau.go_up (a_timestamp)
 				end
 			end
 		end
 
 	on_key_released (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
-			-- Action when a keyboard key has been released
+			-- Action quand une touche de clavier n'est plus enfonce
 		do
-			if not a_key_state.is_repeat then -- I don't know if a key release can repeat, but you never know...
+			if not a_key_state.is_repeat then
 				if a_key_state.is_space then
-					oiseau.go_down (a_timestamp)
+					le_oiseau.go_down (a_timestamp)
 				elseif a_key_state.is_left then
 				end
 			end
 		end
 
-	on_quit (a_timestamp: NATURAL_32)
-			-- This method is called when the quit signal is send to the application (ex: window X button pressed).
+	on_quit (a_timestamp: NATURAL_32) -- Methode appellee quand une demande de sortie est demandee.
+
 		do
-			game_library.stop -- Stop the controller loop (allow game_library.launch to return)
+			le_pointage := points
+			create sc.make (le_pointage)
+			sc.set_pointage (le_pointage)
+			game_library.stop --arrete la boucle du controlleur
 		end
 
 end
