@@ -26,6 +26,7 @@
 				<exclude>/EIFGENs$</exclude>
 				<exclude>/CVS$</exclude>
 				<exclude>/theme$</exclude>
+				<exclude>/serveurscore_flippybird$</exclude>
 			</file_rule>
 			<tests name="tests" location="C:\Users\1235492\Desktop\Flippybird-master\tests\"/>
 		</cluster>

@@ -1,7 +1,7 @@
 note
 	description: "Classe moteur du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	revision: "1.0"
 
 class
@@ -9,7 +9,8 @@ class
 
 inherit
 
-	GAME_LIBRARY_SHARED -- To use `game_library'
+	GAME_LIBRARY_SHARED
+	--Pour utiliser 'game_library'
 
 create
 	make
@@ -17,13 +18,14 @@ create
 feature {NONE}
 
 	make
+			--Constructeur de la fenêtre du jeu.Crée également les différents objets du jeu(image de fond,oiseau,tuyaux,etc..)
 		local
 			l_window_builder: GAME_WINDOW_SURFACED_BUILDER
 			le_thread: UN_THREAD
 		do
 			create image_de_fond
-			create le_oiseau
-			create pipe
+			create flippy_oiseau
+			create flippy_tuyaux
 			create sol
 			create random
 			create musique
@@ -33,157 +35,177 @@ feature {NONE}
 				l_window_builder.set_dimension (800, 600) --Créer une fenêtre de 800(largeur) X 600(hauteur)
 			end
 			window := l_window_builder.generate_window
-			has_error := image_de_fond.has_error or le_oiseau.has_error or window.has_error
+			has_error := image_de_fond.has_error or flippy_oiseau.erreur or window.has_error
 		end
 
 feature -- Access
 
-	run
-			-- Create ressources and launch the game
+	demarrer
+		require else
+			game_library.is_events_running
+			-- Crée les agents de jeu et initialise des coordonnées
 		do
-			print(points)
+			print (points)
 			tuyaux_suivant := 0
 			points := 0
-			le_oiseau.y := 250
-			le_oiseau.x := 250
-			pipe.x := 450
-			pipe.change_y
-			game_library.quit_signal_actions.extend (agent on_quit)
-			window.key_pressed_actions.extend (agent on_key_pressed)
-			window.key_released_actions.extend (agent on_key_released)
-			game_library.iteration_actions.extend (agent on_iteration)
+			flippy_oiseau.y := 250
+			flippy_oiseau.x := 250
+			flippy_tuyaux.x := 450
+			flippy_tuyaux.change_y
+			game_library.quit_signal_actions.extend (agent quitter)
+			window.key_pressed_actions.extend (agent touche_enfonce)
+			window.key_released_actions.extend (agent touche_non_enfonce)
+			game_library.iteration_actions.extend (agent sur_iteration)
 			game_library.launch
 		end
 
 	has_error: BOOLEAN
-			-- `True' if an error occured during the creation of `Current'
+			-- Vrai si une erreur survient durant la création de Current
 
-	image_de_fond: FOND_IMAGE --Background
+	image_de_fond: FOND_IMAGE
+			--Représente l'image de fond du jeu
 
-	le_oiseau: OISEAU
+	flippy_oiseau: OISEAU
+			--Représente la classe oiseau
 
-	pipe: TUYAUX
+	flippy_tuyaux: TUYAUX
+			--Représente les tuyaux qui seront générés dans le jeu
 
 	sol: SOL
+			--Represente le sol qui sera généré dans le jeu
 
 	musique: SON
+			--Représente la musique qui sera générée dans le jeu
 
 	window: GAME_WINDOW_SURFACED
+			--Représente la fenêtre du jeu
 
 	oiseau_y: INTEGER_32
+			--Représente la position Y de l'oiseau
 
-	pipe_mid_bas: INTEGER
+	flippy_tuyaux_y: INTEGER_32
+			--Représente la position Y des tuyaux
 
-	pipe_y: INTEGER_32
-
-	pipe_x: INTEGER_32
+	flippy_tuyaux_x: INTEGER_32
+			--Représente la position X des tuyaux
 
 	random: NOMBRE_RANDOM
-
-	i: INTEGER
+			--Représente la classe qui permet de généré un nombre aléatoire
 
 	points: INTEGER
+			--Représente le pointage du jeu
 
 	sc: SERVEUR_CLIENT
-
-	pipe_mid_haut: INTEGER
-
-	total: INTEGER
-
-	le_pointage: INTEGER
+			--Représente la classe dans laquelle sont envoyé les pointages au serveur de pointage
 
 	tuyaux_suivant: INTEGER
+			--Représente la position X du tuyau suivant(après que l'oiseau l'ai traversé)
 
 feature {NONE} -- Implementation
 
-	on_iteration (a_timestamp: NATURAL_32) -- Evenement qui est lance a chaque iteration
+	sur_iteration (a_timestamp: NATURAL_32)
+			-- Événement qui est lancé à chaque iteration
+		local
+			l_i: INTEGER
+				--Variable pour la boucle
+			l_flippy_tuyaux_milieu_bas: INTEGER
+				--Identifie la position(x et y) du tuyaux du bas(lorsque l'oiseau le traverse)
+			l_flippy_tuyaux_milieu_haut: INTEGER
+			--Identifie la position(x et y) du tuyaux du haut(lorsque l'oiseau le traverse)
 
 		do
 			oiseau_y := 100
-			oiseau_y := le_oiseau.y
-			pipe_x := pipe.x
-			pipe_mid_bas := pipe.y + 427
-			pipe_mid_haut := pipe.y + 327
-			le_oiseau.update (a_timestamp) -- Update oiseau animation and coordinate
-			pipe.update (a_timestamp)
+			oiseau_y := flippy_oiseau.y
+			flippy_tuyaux_x := flippy_tuyaux.x
+			l_flippy_tuyaux_milieu_bas := flippy_tuyaux.y + 427
+			l_flippy_tuyaux_milieu_haut := flippy_tuyaux.y + 327
+			flippy_oiseau.actualiser (a_timestamp)
+				--Met à jour les coordonnées de l'oiseau
+			flippy_tuyaux.actualiser (a_timestamp)
+				--Met à jour la position X des tuyaux
 			musique.audio_library.update
+				--Met à jour les buffers de la librarie audio
 
-				-- S'assure que l'oiseau ne sort pas de l'ecran
-			if le_oiseau.x < 0 then
-				le_oiseau.x := 0
+			if flippy_oiseau.x < 0 then
+				flippy_oiseau.x := 0
+					-- S'assure que l'oiseau ne sort pas de l'ecran
 			end
-			if le_oiseau.x + 15 = pipe_x + tuyaux_suivant + pipe.width then -- Lorsque l'oiseeau passe un tuyau
-				tuyaux_suivant := tuyaux_suivant + 300 -- Ajoute 300px pour donner les coordonnees du prochain tuyau
+			if flippy_oiseau.x + 15 = flippy_tuyaux_x + tuyaux_suivant + flippy_tuyaux.width then -- Lorsque l'oiseeau passe un tuyau
+				tuyaux_suivant := tuyaux_suivant + 300 -- Ajoute 300px pour donner les coordonnées du prochain tuyau
 				points := points + 1 --Additionne 1 points
 				print (points)
 			end
-			if le_oiseau.y <= pipe_mid_haut and le_oiseau.x + 15 >= pipe_x + tuyaux_suivant and le_oiseau.x + 15 <= pipe_x + tuyaux_suivant + pipe.width then
-				le_oiseau.rip_on (a_timestamp) --Permet d'identifier si l'oiseau touche a un tuyau(haut).Si c'est le cas, appelle oiseau.rip_on
+			if flippy_oiseau.y <= l_flippy_tuyaux_milieu_haut and flippy_oiseau.x + 15 >= flippy_tuyaux_x + tuyaux_suivant and flippy_oiseau.x + 15 <= flippy_tuyaux_x + tuyaux_suivant + flippy_tuyaux.width then
+				flippy_oiseau.mort_on (a_timestamp) --Permet d'identifier si l'oiseau touche à un tuyau(haut).Si c'est le cas, appelle oiseau.mort_on
 
 			end
-			if le_oiseau.y >= pipe_mid_bas and le_oiseau.x + 15 >= pipe_x + tuyaux_suivant and le_oiseau.x + 15 <= pipe_x + tuyaux_suivant + pipe.width then
-				le_oiseau.rip_on (a_timestamp) --Permet d'identifier si l'oiseau touche a un tuyau(bas).Si c'est le cas, appelle oiseau.rip_on
+			if flippy_oiseau.y >= l_flippy_tuyaux_milieu_bas and flippy_oiseau.x + 15 >= flippy_tuyaux_x + tuyaux_suivant and flippy_oiseau.x + 15 <= flippy_tuyaux_x + tuyaux_suivant + flippy_tuyaux.width then
+				flippy_oiseau.mort_on (a_timestamp) --Permet d'identifier si l'oiseau touche à un tuyau(bas).Si c'est le cas, appelle oiseau.mort_on
 
 			end
-			if le_oiseau.rip = True then --Lorsque oiseau.rip egal a vrai, arrete l'oiseau et les tuyaux de bouger
-				pipe.stop_scroll (a_timestamp)
-				le_oiseau.stop_oiseau (a_timestamp)
+			if flippy_oiseau.mort = True then --Lorsque oiseau.mort égal à vrai, arrête l'oiseau et les tuyaux de bouger
+				flippy_tuyaux.arret_defilement (a_timestamp)
+				flippy_oiseau.stop_oiseau (a_timestamp)
 			end
 
-				-- Dessine les elements
-			i := 0
+				-- Dessine les éléments
+			l_i := 0
 			window.surface.draw_surface (image_de_fond, 0, 0)
-				--	window.surface.draw_surface (pipe, 200,pipe.y)
-			window.surface.draw_surface (le_oiseau.surface, 200, oiseau_y)
-				--	window.surface.draw_surface (pipe, pipe_x,pipe.y)
+			window.surface.draw_surface (flippy_oiseau.surface, 200, oiseau_y)
 			window.surface.draw_surface (sol, 0, 550)
 			window.surface.draw_surface (sol, 420, 550)
 
 				--Dessine les 100 tuyaux du jeu
 			from
-				i := 0
+				l_i := 0
 			until
-				i >= 100
+				l_i >= 100
 			loop
-				window.surface.draw_surface (pipe, pipe_x, pipe.y)
-				pipe_x := pipe_x + 300
-				i := i + 1
+				window.surface.draw_surface (flippy_tuyaux, flippy_tuyaux_x, flippy_tuyaux.y)
+				flippy_tuyaux_x := flippy_tuyaux_x + 300
+				l_i := l_i + 1
 			end
-			window.update -- Met a jour les modifications dans l'ecran
+			window.update
+				-- Met à jour les modifications dans l'écran
 		end
 
-	on_key_pressed (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
-			-- Action quand une touche de clavier a ete peser
+	touche_enfonce (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
+			-- Action quand une touche de clavier a été enfoncée
 		do
-			if not a_key_state.is_repeat then -- Be sure that the event is not only an automatic repetition of the key
+			if not a_key_state.is_repeat then
 				if a_key_state.is_space then
-					if le_oiseau.rip = False then
-						pipe.scroll (a_timestamp)
+					if flippy_oiseau.mort = False then
+						flippy_tuyaux.defilement (a_timestamp)
 					end
-					le_oiseau.jeu_actif_on (a_timestamp)
-					le_oiseau.go_up (a_timestamp)
+						--	flippy_oiseau.jeu_actif_on (a_timestamp)
+					flippy_oiseau.monte_oiseau (a_timestamp)
 				end
 			end
 		end
 
-	on_key_released (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
-			-- Action quand une touche de clavier n'est plus enfonce
+	touche_non_enfonce (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE)
+			-- Action quand une touche de clavier n'est plus enfoncée
 		do
 			if not a_key_state.is_repeat then
 				if a_key_state.is_space then
-					le_oiseau.go_down (a_timestamp)
+					flippy_oiseau.descend_oiseau (a_timestamp)
 				elseif a_key_state.is_left then
 				end
 			end
 		end
 
-	on_quit (a_timestamp: NATURAL_32) -- Methode appellee quand une demande de sortie est demandee.
+	quitter (a_timestamp: NATURAL_32)
+			-- Méthode appellée quand une demande de sortie est demandée.
+		local
+			a_pointage: INTEGER
+			--Représente une variable dans laquelle sera transféré les points pour ensuite être envoyé au serveur de pointage
 
 		do
-			le_pointage := points
-			create sc.make (le_pointage)
-			sc.set_pointage (le_pointage)
-			game_library.stop --arrete la boucle du controlleur
+			a_pointage := points
+					create sc.make (a_pointage)
+					sc.set_pointage (a_pointage)
+					game_library.stop
+				--arrête la boucle du contrôlleur
 		end
 
 end

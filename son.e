@@ -1,7 +1,7 @@
 note
 	description: "Classe contenant la musique du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	revision: "1.0"
 
 class
@@ -12,7 +12,7 @@ inherit
 	AUDIO_LIBRARY_SHARED
 		redefine
 			default_create
-		end -- Enable the `audio_library' functionnality
+		end
 
 create
 	default_create
@@ -20,47 +20,37 @@ create
 feature {NONE} -- Initialization
 
 	default_create
-			-- Run application.
+		require else
+			audio_library.is_sound_enable
 		do
-			set_sound()
+			regler_son()
 		end
 
-	set_sound()
+	regler_son()
 		local
-			musique_intro, musique_boucle: AUDIO_SOUND_FILE
-			sound_source, music_source: AUDIO_SOURCE -- You need one source for each sound you want to be playing at the same time.
+			l_musique_intro, l_musique_boucle: AUDIO_SOUND_FILE
+			son_source, musique_source: AUDIO_SOURCE
 		do
-			create musique_intro.make ("song.flac") -- Ce son sera jouer une fois une debut
-			create musique_boucle.make ("Sandstorm.flac") -- Ce son jouera en boucle
+			create l_musique_intro.make ("song.flac") -- Ce son sera joué une fois au début
+			create l_musique_boucle.make ("Sandstorm.flac") -- Ce son jouera en boucle
 
-			if musique_intro.is_openable and musique_boucle.is_openable then
-				musique_intro.open
-				musique_boucle.open
-				if musique_intro.is_open and musique_boucle.is_open then
+			if l_musique_intro.is_openable and l_musique_boucle.is_openable then
+				l_musique_intro.open
+				l_musique_boucle.open
+				if l_musique_intro.is_open and l_musique_boucle.is_open then
 					audio_library.sources_add
-					music_source := audio_library.last_source_added
+					musique_source := audio_library.last_source_added
 					audio_library.sources_add
-					sound_source := audio_library.last_source_added
-					music_source.queue_sound (musique_intro) -- Joue la musique d'intro
-					music_source.queue_sound_infinite_loop (musique_boucle) -- Apres la musique d'intro,joue cette musique en boucle
+					son_source := audio_library.last_source_added
+					musique_source.queue_sound (l_musique_intro) -- Joue la musique d'intro
+					musique_source.queue_sound_infinite_loop (l_musique_boucle) -- Après la musique d'intro,joue cette musique en boucle
 
-					music_source.play -- Joue la musique
+					musique_source.play -- Joue la musique
 				else
 					print ("Impossible d'ouvrir fichier audio.")
 				end
 			else
 				print ("Fichier audio invalide.")
-			end
-		end
-
-	on_key_down_sound (a_timestamp: NATURAL_32; a_key_state: GAME_KEY_STATE; a_sound: AUDIO_SOUND; a_sound_source: AUDIO_SOURCE)
-			-- When the space button is pressed (in `a_key_state'), play `a_sount' in `a_sound_source'
-		do
-			if a_key_state.is_space then -- If the space key as been pressed, play the space sound
-				a_sound_source.stop -- Be sure that the queue buffer is empty on the sound_source object (when stop, the source queue is clear)
-				a_sound.restart -- Be sure that the sound is at the beginning
-				a_sound_source.queue_sound (a_sound) -- Queud the sound into the source queue
-				a_sound_source.play -- Play the source
 			end
 		end
 

@@ -1,7 +1,7 @@
 note
 	description: "Classe représentant les tuyaux du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	revision: "1.0"
 
 class
@@ -17,16 +17,14 @@ inherit
 create
 	default_create
 
-feature {NONE} -- Initialization
-
-	distance_entre: INTEGER
+feature {NONE}
 
 	default_create
 		local
 			l_image: IMG_IMAGE_FILE
 		do
 			create rando
-			create l_image.make ("pipe_one_img.png")
+			create l_image.make ("pipe_one_img.png") --Crée l'image des tuyaux
 			if l_image.is_openable then
 				l_image.open
 				if l_image.is_open then
@@ -39,72 +37,69 @@ feature {NONE} -- Initialization
 				has_error := True
 				make (1, 1)
 			end
-			coordonne_tuyaux
-		end
-
-	coordonne_tuyaux
-			-- Create the `animation_coordinates'
-		do
-			create {ARRAYED_LIST [TUPLE [x, y: INTEGER]]} xety.make (1)
 		end
 
 feature -- Access
 
-	update (a_timestamp: NATURAL_32)
-			-- Update the surface depending on the present `a_timestamp'.
-			-- Each 100 ms, the image change; each 10ms `Current' is moving
+	actualiser (a_timestamp: NATURAL_32)
+			-- Met à jour l'image de tuyaux dependemment du 'a_timestamp'
+		require else
+			game_library.is_events_enable
 		local
-				--l_coordinate:TUPLE[x,y:INTEGER]
 			l_delta_time: NATURAL_32
-			oiseau: oiseau
 		do
-			if scroll_On = True then
-				x := x - 1
-				scroll_off := False
-			elseif scroll_off then
+			if defilement_on = True then
+				x := x - Vitesse_tuyaux
+				defilement_off := False
+					--conditions qui fais un défilement des tuyaux vers la gauche tant que defilement_on est vrai
+			elseif defilement_off then
 				if x >= 490 then
-					stop_scroll (a_timestamp)
+					arret_defilement (a_timestamp)
 				end
-				x := x + 0
+					--Arrête le defilement des tuyaux si defilement_off est vrai
+
 			end
 			old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
 		end
 
-	not_scroll (a_timestamp: NATURAL_32)
+	non_defilement (a_timestamp: NATURAL_32)
 		do
 			old_timestamp := a_timestamp
-			scroll_On := False
-			scroll_off := True
+			defilement_on := False
+			defilement_off := True
 		end
 
-	scroll (a_timestamp: NATURAL_32)
+	defilement (a_timestamp: NATURAL_32)
+			--active le défilement des tuyaux
+
 		do
 			old_timestamp := a_timestamp
-			scroll_On := True
+			defilement_on := True
 		end
 
-	stop_scroll (a_timestamp: NATURAL_32)
+	arret_defilement (a_timestamp: NATURAL_32)
+			--arrête les défilement des tuyaux
 		do
 			old_timestamp := a_timestamp
-			scroll_On := False
-			scroll_off := False
+			defilement_on := False
+			defilement_off := False
 			y := y
 		end
 
-	scroll_off: BOOLEAN
-			-- Is `Current' moving left
+	defilement_off: BOOLEAN
+			--Variable qui indique que les tuyaux ne défilent pas
 
-	scroll_On: BOOLEAN
-			-- Is `Current' moving right
+	defilement_on: BOOLEAN
+			--Variable qui indique que les tuyaux défilent
 
-	x: INTEGER assign set_x
-			-- Vertical position of `Current'
+	x: INTEGER assign assigne_x_tuyau
+			--position X du tuyaux assigne par assigne_x_tuyau
 
 	y: INTEGER
-			-- Horizontal position of `Current'
+			--position Y du tuyaux assigne par set_y
 
-	set_x (a_x: INTEGER)
-			-- Assign the value of `x' with `a_x'
+	assigne_x_tuyau (a_x: INTEGER)
+			--Assigne la valeur de x a a_x
 		do
 			x := a_x
 		ensure
@@ -112,27 +107,31 @@ feature -- Access
 		end
 
 	change_y
-			-- Assign the value of `y' with `a_y'
+			--génère un nombre aleatoire pour la position Y des tuyaux
+
 		do
 			rando.gen_random
-			y := rando.y_random
+			y := rando.nombre_aleatoire
+		ensure
+			Is_Assign: y = rando.nombre_aleatoire
 		end
 
-feature {NONE} -- implementation
+feature {NONE}
 
 	rando: NOMBRE_RANDOM
+			--identifie la classe NOMBRE_RANDOM
 
 	old_timestamp: NATURAL_32
-			-- When appen the last movement (considering `movement_delta')
+			-- Quand arrive le dernier mouvement
 
-feature {NONE} -- constants
+feature {NONE} -- constantes
 
 	movement_delta: NATURAL_32 = 10
-			-- The delta time between each movement of `Current'
+			-- Le temps delta entre chaque mouvement de 'Current'
 
 	animation_delta: NATURAL_32 = 100
 
-	xety: LIST [TUPLE [x, y: INTEGER]]
-			-- The delta time between each animation of `Current'
+	Vitesse_tuyaux: INTEGER = 1
+			--La vitesse de déplacement des tuyaux
 
 end

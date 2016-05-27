@@ -1,7 +1,7 @@
 note
 	description: "Serveur de pointage pour le jeu Flippybird"
 	author: "Félix-Olivier Lafleur-Duhamel"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	revision: "1.0"
 
 class
@@ -14,16 +14,15 @@ inherit
 create
 	make
 
-feature {NONE} -- Initialization
+feature {NONE}
 
 	make
-			-- Run application.
 		do
 			arret (false)
 			create fichier_txt_serveur.make_with_name ("dossier/serveur.txt")
 			affiche_pointage
-			create le_thread.make (fichier_txt_serveur)
-			le_thread.launch
+			create serveur.make (fichier_txt_serveur)
+			serveur.launch
 			from
 			until
 				stop = True
@@ -33,29 +32,35 @@ feature {NONE} -- Initialization
 					arret (true)
 				end
 			end
-			le_thread.stop_thread
-			le_thread.join
+			serveur.stop_thread
+			serveur.join
 		end
 
 feature
 
-	le_thread: UN_THREAD
+	serveur: SERVEUR_POINTAGE_THREAD
 
-	fichier_txt_serveur: PLAIN_TEXT_FILE  --le fichier texte contenant les pointages
+	fichier_txt_serveur: PLAIN_TEXT_FILE
+			--le fichier texte contenant les pointages
 
-	stop: BOOLEAN --Pour la fermeture du serveur
+	stop: BOOLEAN
+			--Pour la fermeture du serveur
 
 feature
 
-	arret (le_stop: BOOLEAN) -- Assigne la valeur a stop
+	arret (a_stop: BOOLEAN)
+			-- Assigne la valeur a stop
 
 		do
-			stop := le_stop
+			stop := a_stop
+		ensure
+			stop = a_stop
 		end
 
 feature
 
-	affiche_pointage --Lit et affiche  les pointages enregistres dans le fichier_txt_serveur
+	affiche_pointage
+			--Lit et affiche  les pointages enregistres dans le fichier_txt_serveur
 
 		do
 			print ("Pointage%N")
@@ -70,7 +75,8 @@ feature
 			fichier_txt_serveur.close
 		end
 
-	quit -- Quitter le serveur
+	quit
+			-- Quitte le serveur
 
 		do
 			stop := true

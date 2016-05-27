@@ -1,7 +1,7 @@
 note
 	description: "Classe pour un thread"
 	author: "Félix-Olivier Lafleur-Duhamel"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	version: "1.0"
 
 class
@@ -16,7 +16,7 @@ inherit
 create
 	make
 
-feature {NONE} -- Initialization
+feature {NONE} 
 
 	make (a_chaine: STRING)
 			-- Initialisation de `Current' utilisant `a_chaine' comme `chaine_affiche'
@@ -43,7 +43,7 @@ feature {NONE} -- Thread methods
 			until
 				must_stop
 			loop
-				io.put_string ("ok")
+				io.put_string ("test")
 				io.output.flush
 			end
 		end

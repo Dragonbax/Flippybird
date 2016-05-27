@@ -1,7 +1,7 @@
 note
 	description: "Classe générant des nombres aléatoires"
 	author: "Félix-Olivier Lafleur-Duhamel"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	version: "1.0"
 
 class
@@ -13,14 +13,16 @@ inherit
 
 feature
 
-	y_random: INTEGER
+	nombre_aleatoire: INTEGER
+		--Représente un nombre généré aléatoirement
 
 	gen_random
+		--Génère un nombre aléatoire se situant entre -250 et -15,et l'assigne à 'nombre_aleatoire'
 		do
 			random.generate_new_random
-			y_random := random.last_random_integer_between (-250, -15)
+			nombre_aleatoire := random.last_random_integer_between (-250, -15)
 		ensure
-			y_random = random.last_random_integer_between (-250, -15)
+			nombre_aleatoire = random.last_random_integer_between (-250, -15)
 		end
 
 end

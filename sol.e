@@ -1,7 +1,7 @@
 note
 	description: "Classe représentant le sol du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	revision: "1.0"
 
 class
@@ -17,12 +17,16 @@ inherit
 create
 	default_create
 
-feature {NONE} -- Initialization
+feature {NONE}
 
 	default_create
+	require else
+			game_library.is_events_enable
+
 		local
 			l_image: IMG_IMAGE_FILE
 		do
+			--crée l'image du sol
 			create l_image.make ("ground.png")
 			if l_image.is_openable then
 				l_image.open

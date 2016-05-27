@@ -1,7 +1,7 @@
 note
 	description: "Classe représentant l'oiseau du jeu"
 	author: "Félix-Olivier Lafleur-Duhamel(inspiré du code de Louis Marchand)"
-	date: "17 mai 2016"
+	date: "26 mai 2016"
 	revision: "1.0"
 
 class
@@ -17,125 +17,124 @@ inherit
 create
 	default_create
 
-feature {NONE} -- Initialization
+feature {NONE}
 
 	default_create
-
-			-- Initialization of `Current'
+		require else
+			game_library.is_events_enable
 		local
 			l_image: IMG_IMAGE_FILE
 		do
+				--Crée la surface(image) de l'oiseau
 			create surface.make (50, 50)
-			create random
-			has_error := False
+			create aleatoire
+			erreur := False
 			create l_image.make ("rsz_bird.png")
 			if l_image.is_openable then
 				l_image.open
 				create surface.make_from_image (l_image)
 			else
-				has_error := False
+				erreur := False
 			end
-			initialize_xy
+
 		end
 
-	initialize_xy
-			-- Create the `xety'
-		do
-			create {ARRAYED_LIST [TUPLE [x, y: INTEGER]]} xety.make (4)
-		end
 
 feature -- Access
 
-	has_error: BOOLEAN
-			-- Is an error happen when initializing the `surface'
+	erreur: BOOLEAN
+			-- Si une erreur survient lors de l'initialisation de la surface
 
-	update (a_timestamp: NATURAL_32)
-			-- Update the surface depending on the present `a_timestamp'.
-			-- Each 100 ms, the image change; each 10ms `Current' is moving
+	actualiser (a_timestamp: NATURAL_32)
+			-- Met à jour la surface de l'oiseau dépendemment du a_timestamp.
+			--Met à jour la position Y de l'oiseau
 		local
-				--l_coordinate:TUPLE[x,y:INTEGER]
 			l_delta_time: NATURAL_32
 		do
-			if going_up then
-				if y <= -10 then --make sure that the bird cannot go higher than the window height
+			if oiseau_monte then
+				if y <= -10 then --S'assure que l'oiseau ne peut pas aller plus haut que le haut de la fenêtre
 					stop_oiseau (a_timestamp)
-				elseif rip = True then
+				elseif mort = True then
 					stop_oiseau (a_timestamp)
 				else
-					y := y - 2
+					y := y - Vitesse_oiseau
 				end
-				jeu_actif := True
-			elseif going_down then
-				if y >= 490 then --make sure that the bird cannot go lower than the ground
+					--	jeu_actif := True
+			elseif oiseau_descend then
+				if y >= 490 then --S'assure que l'oiseau ne peut aller plus bas que le sol
 					stop_oiseau (a_timestamp)
-					rip := True
+					mort := True
 				else
-					y := y + 2
+					y := y + Vitesse_oiseau
 				end
 			end
 			old_timestamp := old_timestamp + (l_delta_time // movement_delta) * movement_delta
 		end
 
-	go_down (a_timestamp: NATURAL_32)
+	descend_oiseau (a_timestamp: NATURAL_32)
+			-- Fais descendre l'oiseau
 		do
 			old_timestamp := a_timestamp
-			going_up := False
-			going_down := True
+			oiseau_monte := False
+			oiseau_descend := True
 		end
 
-	go_up (a_timestamp: NATURAL_32)
+	monte_oiseau (a_timestamp: NATURAL_32)
+			--Fais monter l'oiseau
 		do
 			old_timestamp := a_timestamp
-			going_up := True
+			oiseau_monte := True
 		end
 
 	stop_oiseau (a_timestamp: NATURAL_32)
+			--Arrête le mouvement de l'oiseau
 		do
 			old_timestamp := a_timestamp
-			going_up := False
-			going_down := False
+			oiseau_monte := False
+			oiseau_descend := False
 			y := y
 		end
 
-	rip: BOOLEAN
+	mort: BOOLEAN
+			--Variable représentant la mort de l'oiseau("Game Over")
 
-	jeu_actif: BOOLEAN
 
-	jeu_actif_on (a_timestamp: NATURAL_32)
+
+	mort_on (a_timestamp: NATURAL_32)
+			--Met la variable mort a "True"
+
 		do
 			old_timestamp := a_timestamp
-			jeu_actif := True
+			mort := True
 		end
 
-	rip_on (a_timestamp: NATURAL_32)
-		do
-			old_timestamp := a_timestamp
-			rip := True
-		end
+	oiseau_descend: BOOLEAN
+			-- L'oiseau descend
 
-	going_down: BOOLEAN
-			-- Is `Current' moving left
+	oiseau_monte: BOOLEAN
+			-- L'oiseau monte
 
-	going_up: BOOLEAN
-			-- Is `Current' moving right
+	x: INTEGER assign assigne_x
+			-- Assigne assigne_x à x représentant la position X de l'oiseau
 
-	x: INTEGER assign set_x
-			-- Vertical position of `Current'
+	y: INTEGER assign assigne_y
 
-	y: INTEGER assign set_y
+		--Assigne assigne_y à y représentant la position Y de l'oiseau
 
-	random: NOMBRE_RANDOM
+	aleatoire: NOMBRE_RANDOM
 
-	set_x (a_x: INTEGER)
-			-- Assign the value of `x' with `a_x'
+		--Représente la classe générant un nombre aléatoire
+
+	assigne_x (a_x: INTEGER)
+			-- Assigne la valeur de x à a_x
 		do
 			x := a_x
 		ensure
 			Is_Assign: x = a_x
 		end
 
-	set_y (a_y: INTEGER)
-			-- Assign the value of `y' with `a_y'
+	assigne_y (a_y: INTEGER)
+			-- Assigne la valeur de y à a_y
 		do
 			y := a_y
 		ensure
@@ -144,19 +143,21 @@ feature -- Access
 
 	surface: GAME_SURFACE
 
-feature {NONE} -- implementation
+feature {NONE}
 
-	xety: LIST [TUPLE [x, y: INTEGER]]
+
 
 	old_timestamp: NATURAL_32
-			-- When appen the last movement (considering `movement_delta')
+			-- Quand le dernier mouvement arrive
 
-feature {NONE} -- constants
+feature {NONE} -- Constantes
 
 	movement_delta: NATURAL_32 = 10
-			-- The delta time between each movement of `Current'
+			-- Le temps delta entre chaque mouvement de `Current'
 
 	animation_delta: NATURAL_32 = 100
-			-- The delta time between each animation of `Current'
+			-- Le temps delta entre chaque animation de `Current'
+
+	Vitesse_oiseau: INTEGER = 2
 
 end
